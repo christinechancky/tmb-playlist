@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Band List</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Band List">
+<meta name="theme-color" content="#17161A">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#17161A; --bg2:#1D1C21; --card:#26242B; --line:#2A2830; --edge:#3A3740;
+  --text:#F2EFEA; --muted:#A9A4B0; --dim:#6E6976; --accent:#F2A65A; --accent2:#F7C08A;
+  --ok:#8FD9A8; --warn:#FF9A9A; --warnbg:#3B1F22;
+  --safe-top:env(safe-area-inset-top,0px); --safe-bot:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:15px}
+body{min-height:100vh;padding-bottom:calc(84px + var(--safe-bot))}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+h1{margin:0;font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;letter-spacing:-.5px}
+h2{margin:0;font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700}
+.wrap{max-width:640px;margin:0 auto;padding:calc(20px + var(--safe-top)) 16px 16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px}
+.row{display:flex;gap:8px;align-items:center}
+.chip{background:var(--card);border:1px solid var(--edge);border-radius:999px;padding:0 14px;height:36px;font-size:13px;font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.chip.on{background:var(--accent);color:#17161A;border-color:var(--accent);font-weight:600}
+.chip.add{background:transparent;color:var(--accent);border:1px dashed var(--accent)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips.wrapchips{flex-wrap:wrap;overflow:visible}
+.iconbtn{width:44px;height:44px;border-radius:999px;border:1px solid var(--edge);background:var(--card);display:inline-flex;align-items:center;justify-content:center;flex:none}
+.iconbtn.ghost{border:0;background:transparent;color:var(--muted)}
+.iconbtn.play{border:0;color:var(--accent)}
+.search{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:12px;padding:0 12px;height:44px;color:var(--muted);margin-bottom:12px}
+.search input{background:transparent;border:0;outline:none;flex:1;font-size:16px;color:var(--text)}
+.meta{color:var(--muted);font-size:13px;margin:10px 0 4px}
+.song{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.song .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;background:none;border:0;text-align:left;padding:0}
+.song .t{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.song .a{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.song .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.num{width:28px;text-align:center;font:700 20px 'Space Grotesk',sans-serif;color:var(--accent);flex:none}
+.tag{background:var(--card);color:#CFCAD6;border-radius:6px;padding:2px 6px;font-size:11px}
+.tag.yt{background:var(--warnbg);color:var(--warn);font-weight:600}
+.tag.nolink{background:transparent;border:1px solid var(--edge);color:var(--muted)}
+.tag.done{background:#1F3326;color:var(--ok);font-weight:600}
+.btn{height:48px;border-radius:12px;border:1px solid var(--edge);background:var(--card);padding:0 16px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.btn.primary{background:var(--accent);color:#17161A;border:0;font-weight:600}
+.btn.dashed{background:transparent;border:1px dashed #4A4652}
+.btn.danger{background:transparent;color:var(--warn);border-color:#4a2a2e}
+.btn:disabled{opacity:.5}
+.stack{display:flex;flex-direction:column;gap:10px}
+label.lbl{font-size:13px;color:var(--muted);font-weight:500}
+.field{height:48px;width:100%;background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:0 12px;font-size:16px;color:var(--text)}
+select.field{appearance:none;-webkit-appearance:none}
+.card{background:#201F25;border:1px solid #2E2B35;border-radius:16px;padding:16px}
+.fab{position:fixed;right:max(20px,calc(50% - 300px));bottom:calc(100px + var(--safe-bot));width:60px;height:60px;border-radius:999px;border:0;background:var(--accent);color:#17161A;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.45);z-index:5}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;height:calc(70px + var(--safe-bot));padding-bottom:var(--safe-bot);border-top:1px solid var(--line);background:var(--bg2);display:flex;justify-content:space-around;align-items:center;z-index:6}
+nav.tabs button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:12px;font-weight:500;min-width:96px;min-height:48px;justify-content:center}
+nav.tabs button.on{color:var(--accent);font-weight:600}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.sheet-bg.show{display:flex}
+.sheet{width:100%;max-width:640px;max-height:92vh;overflow:auto;background:#201F25;border-radius:22px 22px 0 0;padding:12px 20px calc(24px + var(--safe-bot));display:flex;flex-direction:column;gap:16px}
+.grab{width:40px;height:5px;border-radius:3px;background:#4A4652;align-self:center;flex:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(180px + var(--safe-bot));background:#F2EFEA;color:#17161A;padding:10px 16px;border-radius:12px;font-weight:500;font-size:14px;z-index:40;max-width:90vw;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast.err{background:var(--warn)}
+.empty{color:var(--muted);text-align:center;padding:40px 16px;line-height:1.5}
+.spinner{width:22px;height:22px;border:3px solid var(--edge);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:40px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.platforms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pf{height:64px;border-radius:12px;border:1px solid var(--edge);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px;font-weight:500;text-align:center}
+.pf.on{border-color:var(--accent);background:#3a2c1e;color:var(--accent2)}
+.pf small{color:var(--muted);font-weight:400;font-size:11px}
+.listsel{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;min-height:64px}
+.listsel .n{font:700 18px 'Space Grotesk',sans-serif}
+.listsel .d{color:var(--muted);font-size:13px;margin-top:2px}
+.pick{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left;min-height:52px}
+.pick .chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--edge);flex:none;display:flex;align-items:center;justify-content:center;color:#17161A;font-weight:700;font-size:14px}
+.pick.on .chk{background:var(--accent);border-color:var(--accent)}
+.note{color:var(--muted);font-size:12px;line-height:1.45;margin:0}
+a{color:var(--accent)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="sheet-bg" id="sheetBg"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ===== Config ===== */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzswaVsXYB0DPty0aZCgYmRWARO2pVadsKLBwYTOOw3G24aXReZmbozZ3hg-pYoyDS4/exec';
+const STORE = 'bandlist.v1';
+const PLATFORMS = {
+  apple:   { label: 'Apple Music',   short: 'Apple Music' },
+  spotify: { label: 'Spotify',       short: 'Spotify' },
+  ytmusic: { label: 'YouTube Music', short: 'YT Music' }
+};
+
+/* ===== State ===== */
+let settings = load('settings') || {};
+let data = load('data') || null;          // last list from the sheet (cached for fast start)
+let view = { tab: 'wishlist', tagFilter: null, q: '', setlistId: load('setlistId') || null };
+let loading = false;
+
+function load(k){ try { return JSON.parse(localStorage.getItem(STORE + '.' + k)); } catch(e){ return null; } }
+function save(k, v){ try { localStorage.setItem(STORE + '.' + k, JSON.stringify(v)); } catch(e){} }
+
+/* ===== Helpers ===== */
+const $ = s => document.querySelector(s);
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function norm(s){ return String(s||'').trim().toLowerCase(); }
+function fmtDur(ms){ if(!ms) return ''; const s=Math.round(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function toast(msg, err){ const t=$('#toast'); t.textContent=msg; t.className='toast'+(err?' err':''); t.style.display='block'; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display='none', err?4000:2400); }
+const ICON = {
+  note:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  play:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>',
+  plus:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+  search:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+  star:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg>',
+  list:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+  up:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>',
+  down:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>',
+  x:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  refresh:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
+  gear:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'
+};
+
+/* ===== API ===== */
+async function api(action, body){
+  const payload = Object.assign({ key: settings.passcode, action }, body || {});
+  let res;
+  if (action === 'list' || action === 'options') {
+    res = await fetch(SCRIPT_URL + '?action=' + action + '&key=' + encodeURIComponent(settings.passcode || ''));
+  } else {
+    res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+  }
+  const j = await res.json();
+  if (!j.ok) throw new Error(j.error || 'Something went wrong.');
+  return j;
+}
+
+async function refresh(quiet){
+  if (loading) return;
+  loading = true;
+  if (!quiet) render();
+  try {
+    const j = await api('list');
+    data = { songs: j.songs || [], tags: j.tags || [], shows: j.shows || [], setlists: j.setlists || [] };
+    save('data', data);
+  } catch (e) {
+    toast(e.message, true);
+    if (/passcode/i.test(e.message)) { settings.passcode = ''; save('settings', settings); }
+  } finally {
+    loading = false;
+    render();
+  }
+}
+
+/* ===== Opening songs ===== */
+function ytMusicUrl(u){
+  const m = String(u||'').match(/(?:v=|youtu\.be\/|\/watch\/)([A-Za-z0-9_-]{6,})/);
+  return m ? 'https://music.youtube.com/watch?v=' + m[1] : u;
+}
+function searchUrl(platform, s){
+  const q = encodeURIComponent((s.title + ' ' + (s.artist || '')).trim());
+  if (platform === 'apple') return 'https://music.apple.com/hk/search?term=' + q;
+  if (platform === 'spotify') return 'https://open.spotify.com/search/' + q;
+  if (platform === 'ytmusic') return 'https://music.youtube.com/search?q=' + q;
+  return 'https://www.youtube.com/results?search_query=' + q;
+}
+// Returns {url, how} for this person's platform.
+function openTarget(s, platform){
+  platform = platform || settings.platform || 'apple';
+  const L = s.links || {};
+  if (platform === 'apple' && L.apple) return { url: L.apple, how: 'Apple Music' };
+  if (platform === 'spotify' && L.spotify) return { url: L.spotify, how: 'Spotify' };
+  if (platform === 'ytmusic' && L.youtube) return { url: ytMusicUrl(L.youtube), how: 'YouTube Music' };
+  if (L.youtube) return { url: L.youtube, how: 'YouTube' };            // YouTube-only covers: works without an account
+  return { url: searchUrl(platform, s), how: 'search', search: true }; // hand-typed songs with no links yet
+}
+function openSong(s){
+  const t = openTarget(s);
+  if (t.search) toast('No link yet — searching ' + PLATFORMS[settings.platform || 'apple'].short);
+  window.location.href = t.url;
+}
+
+/* ===== Rendering ===== */
+function render(){
+  const app = $('#app');
+  if (!isReady()) { app.innerHTML = setupHTML(); bindSetup(); return; }
+  let body = '';
+  if (!data) body = '<div class="spinner" aria-label="Loading"></div>';
+  else if (view.tab === 'wishlist') body = wishlistHTML();
+  else body = setlistHTML();
+
+  app.innerHTML = body + `
+    ${view.tab === 'wishlist' && data ? `<button class="fab" aria-label="Add song" data-act="add">${ICON.plus}</button>` : ''}
+    <nav class="tabs">
+      <button class="${view.tab==='wishlist'?'on':''}" data-tab="wishlist">${ICON.star}Wishlist</button>
+      <button class="${view.tab==='setlists'?'on':''}" data-tab="setlists">${ICON.list}Setlists</button>
+    </nav>`;
+  bindMain();
+}
+
+/* --- First-run setup --- */
+const draft = { name: settings.name || '', passcode: '', platform: settings.platform || '' };
+function isReady(){ return !!(settings.passcode && settings.name && settings.platform); }
+function setupHTML(){
+  const p = draft.platform;
+  return `<div class="wrap stack" style="gap:18px">
+    <div class="stack" style="gap:6px;margin-top:24px">
+      <h1>Band List</h1>
+      <p class="note" style="font-size:14px">Set this up once. It’s saved on this phone.</p>
+    </div>
+    <div class="stack" style="gap:8px">
+      <label class="lbl" for="sName">Your name (shows as “Added by”)</label>
+      <input class="field" id="sName" autocomplete="given-name" value="${esc(draft.name)}">
+    </div>
+    <div class="stack" style="gap:8px">
+      <label class="lbl" for="sPass">Band passcode</label>
+      <input class="field" id="sPass" type="password" autocomplete="off" value="${esc(draft.passcode)}">
+    </div>
+    <div class="stack" style="gap:8px">
+      <span class="lbl">Open songs in</span>
+      <div class="platforms">
+        ${Object.keys(PLATFORMS).map(k => `<button class="pf ${p===k?'on':''}" data-pf="${k}">${PLATFORMS[k].label}</button>`).join('')}
+      </div>
+      <p class="note">YouTube-only covers always open on YouTube, no account needed.</p>
+    </div>
+    <button class="btn primary" id="sGo">Continue</button>
+  </div>`;
+}
+function bindSetup(){
+  document.querySelectorAll('[data-pf]').forEach(b => b.onclick = () => {
+    draft.name = $('#sName').value.trim(); draft.passcode = $('#sPass').value.trim();
+    draft.platform = b.dataset.pf; render(); });
+  $('#sGo').onclick = async () => {
+    const name = $('#sName').value.trim(), pass = $('#sPass').value.trim();
+    draft.name = name; draft.passcode = pass;
+    if (!name) return toast('Add your name', true);
+    if (!pass) return toast('Add the band passcode', true);
+    if (!draft.platform) return toast('Pick where songs should open', true);
+    $('#sGo').disabled = true; $('#sGo').textContent = 'Checking…';
+    try {
+      settings.passcode = pass;                       // api() reads it
+      const j = await api('list');
+      settings.name = name; settings.platform = draft.platform;
+      data = { songs: j.songs||[], tags: j.tags||[], shows: j.shows||[], setlists: j.setlists||[] };
+      save('data', data); save('settings', settings); render(); handleIncomingLink();
+    } catch (e) {
+      settings.passcode = '';
+      toast(e.message, true); $('#sGo').disabled = false; $('#sGo').textContent = 'Continue';
+    }
+  };
+}
+
+/* --- Wishlist --- */
+function songRow(s, extra){
+  const t = openTarget(s);
+  const tagHtml = [
+    s.ytOnly ? '<span class="tag yt">YouTube only</span>' : '',
+    t.search ? '<span class="tag nolink">no link yet</span>' : '',
+    (s.tags||[]).map(x => `<span class="tag">${esc(x)}</span>`).join('')
+  ].join('');
+  return `<div class="song">
+    ${extra && extra.num ? `<div class="num">${extra.num}</div>` : ''}
+    <button class="info" data-detail="${esc(s.id)}" aria-label="Details for ${esc(s.title)}">
+      <span class="t">${esc(s.title)}</span>
+      <span class="a">${esc(s.artist)}${extra && extra.dur ? ' · ' + esc(extra.dur) : ''}</span>
+      ${!extra || !extra.num ? `<span class="tags">${tagHtml}</span>` : ''}
+    </button>
+    <button class="iconbtn play" data-open="${esc(s.id)}" aria-label="Open ${esc(s.title)} in ${esc(t.how)}">${ICON.play}</button>
+    ${extra && extra.controls ? extra.controls : ''}
+  </div>`;
+}
+
+function filteredSongs(){
+  let list = data.songs.slice();
+  if (view.tagFilter) list = list.filter(s => (s.tags||[]).some(t => norm(t) === norm(view.tagFilter)));
+  if (view.q) { const q = norm(view.q); list = list.filter(s => norm(s.title).includes(q) || norm(s.artist).includes(q)); }
+  return list.reverse(); // newest first
+}
+
+function wishlistHTML(){
+  const list = filteredSongs();
+  return `<div class="wrap">
+    <div class="top">
+      <h1>Wishlist</h1>
+      <div class="row">
+        <button class="iconbtn ghost" data-act="refresh" aria-label="Refresh">${loading ? '<span class="spinner" style="margin:0;width:18px;height:18px;border-width:2px"></span>' : ICON.refresh}</button>
+        <button class="chip" data-act="settings" aria-label="Settings">${ICON.gear}${esc(PLATFORMS[settings.platform].short)}</button>
+      </div>
+    </div>
+    <label class="search">${ICON.search}<input id="q" placeholder="Search songs or artists" value="${esc(view.q)}" aria-label="Search"></label>
+    <div class="chips">
+      <button class="chip ${!view.tagFilter?'on':''}" data-tag="">All</button>
+      ${data.tags.map(t => `<button class="chip ${view.tagFilter===t?'on':''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}
+    </div>
+    <div class="meta">${list.length} song${list.length===1?'':'s'}${view.tagFilter ? ' tagged “' + esc(view.tagFilter) + '”' : ''}</div>
+    ${list.length ? list.map(s => songRow(s)).join('') : `<div class="empty">${data.songs.length ? 'No songs match.' : 'No songs yet. Tap + to add one.'}</div>`}
+  </div>`;
+}
+
+/* --- Setlists --- */
+function currentSetlist(){
+  if (!data.setlists.length) return null;
+  return data.setlists.find(x => x.id === view.setlistId) || data.setlists[data.setlists.length - 1];
+}
+function setlistHTML(){
+  const sl = currentSetlist();
+  if (!sl) return `<div class="wrap">
+    <div class="top"><h1>Setlists</h1></div>
+    <div class="empty">No setlists yet.<br>Make one for your next gig or rehearsal.</div>
+    <button class="btn primary" data-act="newSetlist">${ICON.plus} New setlist</button>
+  </div>`;
+  const byId = {}; data.songs.forEach(s => byId[s.id] = s);
+  const songs = sl.songIds.map(id => byId[id]).filter(Boolean);
+  const known = songs.filter(s => s.durationMs), total = known.reduce((a, s) => a + s.durationMs, 0);
+  const unknown = songs.length - known.length;
+  const totalTxt = songs.length ? 'Total ≈ ' + (total ? fmtDur(total) : '0:00') + (unknown ? ' + ' + unknown + ' unknown' : '') : '';
+  const details = [sl.date, sl.venue].filter(Boolean).join(' · ');
+  return `<div class="wrap">
+    <div class="top">
+      <h1>Setlists</h1>
+      <button class="iconbtn" data-act="newSetlist" aria-label="New setlist">${ICON.plus}</button>
+    </div>
+    <button class="listsel" data-act="pickSetlist">
+      <div><div class="n">${esc(sl.name)}</div><div class="d">${esc(details || 'Tap to switch setlist')}</div></div>
+      <div class="row">${sl.performed ? '<span class="tag done">Performed ✓</span>' : ''}${ICON.down}</div>
+    </button>
+    <div class="meta" style="display:flex;justify-content:space-between"><span>${songs.length} song${songs.length===1?'':'s'}</span><span>${totalTxt}</span></div>
+    ${songs.map((s, i) => songRow(s, {
+      num: i + 1, dur: fmtDur(s.durationMs),
+      controls: `<div class="row" style="gap:0">
+        <button class="iconbtn ghost" data-move="${i}:-1" aria-label="Move up" ${i===0?'disabled':''}>${ICON.up}</button>
+        <button class="iconbtn ghost" data-move="${i}:1" aria-label="Move down" ${i===songs.length-1?'disabled':''}>${ICON.down}</button>
+        <button class="iconbtn ghost" data-remove="${i}" aria-label="Remove from setlist">${ICON.x}</button>
+      </div>`
+    })).join('')}
+    <div class="stack" style="margin-top:16px">
+      <button class="btn dashed" data-act="addFromWishlist">${ICON.plus} Add from Wishlist</button>
+      ${sl.performed
+        ? `<button class="btn" data-act="unperform">Performed ✓ — tap to undo</button>`
+        : `<button class="btn primary" data-act="perform">Mark as performed</button>`}
+      <p class="note">${sl.performed
+        ? 'Songs here show “' + esc(sl.name) + '” in the sheet’s Performed at column. Editing this setlist keeps it in step.'
+        : 'Adds “' + esc(sl.name) + '” to each song’s Performed at column in the sheet.'}</p>
+      <div class="row">
+        <button class="btn" data-act="editSetlist">Edit details</button>
+        <button class="btn danger" data-act="deleteSetlist">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ===== Events ===== */
+function bindMain(){
+  document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { view.tab = b.dataset.tab; render(); window.scrollTo(0,0); });
+  document.querySelectorAll('[data-tag]').forEach(b => b.onclick = () => { view.tagFilter = b.dataset.tag || null; render(); });
+  document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openSong(songById(b.dataset.open)));
+  document.querySelectorAll('[data-detail]').forEach(b => b.onclick = () => detailSheet(songById(b.dataset.detail)));
+  document.querySelectorAll('[data-move]').forEach(b => b.onclick = () => { const [i, d] = b.dataset.move.split(':').map(Number); moveInSetlist(i, d); });
+  document.querySelectorAll('[data-remove]').forEach(b => b.onclick = () => removeFromSetlist(Number(b.dataset.remove)));
+  const q = $('#q');
+  if (q) q.oninput = () => { view.q = q.value; const pos = q.selectionStart; render(); const q2 = $('#q'); q2.focus(); q2.setSelectionRange(pos, pos); };
+  const acts = {
+    add: () => addSheet(), refresh: () => refresh(), settings: () => settingsSheet(),
+    newSetlist: () => setlistFormSheet(null), editSetlist: () => setlistFormSheet(currentSetlist()),
+    pickSetlist: () => pickSetlistSheet(), addFromWishlist: () => pickSongsSheet(),
+    perform: () => setPerformed(true), unperform: () => { if (confirm('Undo “performed”? This removes the show from these songs’ Performed at column.')) setPerformed(false); },
+    deleteSetlist: () => deleteSetlist()
+  };
+  document.querySelectorAll('[data-act]').forEach(b => b.onclick = () => acts[b.dataset.act] && acts[b.dataset.act]());
+}
+function songById(id){ return data.songs.find(s => s.id === id); }
+
+/* ===== Sheets (pop-ups) ===== */
+function openSheet(html, bind){
+  $('#sheet').innerHTML = '<div class="grab"></div>' + html;
+  $('#sheetBg').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  if (bind) bind($('#sheet'));
+}
+function closeSheet(){ $('#sheetBg').classList.remove('show'); document.body.style.overflow = ''; }
+$('#sheetBg').addEventListener('click', e => { if (e.target.id === 'sheetBg') closeSheet(); });
+
+function tagPickerHTML(selected){
+  return `<div class="chips wrapchips" id="tagPicker">
+    ${data.tags.map(t => `<button class="chip ${selected.some(x=>norm(x)===norm(t))?'on':''}" data-tp="${esc(t)}">${selected.some(x=>norm(x)===norm(t))?'✓ ':''}${esc(t)}</button>`).join('')}
+    <button class="chip add" data-newtag>+ New tag</button>
+  </div>`;
+}
+function bindTagPicker(root, selected, rerender){
+  root.querySelectorAll('[data-tp]').forEach(b => b.onclick = () => {
+    const t = b.dataset.tp, i = selected.findIndex(x => norm(x) === norm(t));
+    if (i >= 0) selected.splice(i, 1); else selected.push(t);
+    rerender();
+  });
+  const nb = root.querySelector('[data-newtag]');
+  if (nb) nb.onclick = () => {
+    const t = (prompt('New tag name') || '').trim();
+    if (!t) return;
+    if (!data.tags.some(x => norm(x) === norm(t))) data.tags.push(t);
+    if (!selected.some(x => norm(x) === norm(t))) selected.push(t);
+    rerender();
+  };
+}
+
+/* --- Add song --- */
+function addSheet(prefill){
+  const st = { url: prefill || '', tags: [], setlistId: '' };
+  const draw = () => openSheet(`
+    <div class="row" style="justify-content:space-between"><h2>Add song</h2><button class="iconbtn ghost" data-close aria-label="Close">${ICON.x}</button></div>
+    <div class="stack" style="gap:8px">
+      <label class="lbl" for="aUrl">Song link (Apple Music, Spotify or YouTube)</label>
+      <div class="row"><input class="field" id="aUrl" inputmode="url" placeholder="https://…" value="${esc(st.url)}"><button class="btn" style="width:auto" data-paste>Paste</button></div>
+    </div>
+    <div class="stack" style="gap:8px"><span class="lbl">Tags (pick any)</span>${tagPickerHTML(st.tags)}</div>
+    <div class="stack" style="gap:8px">
+      <label class="lbl" for="aSet">Also add to a setlist? (optional)</label>
+      <select class="field" id="aSet"><option value="">None</option>${data.setlists.map(s => `<option value="${esc(s.id)}" ${st.setlistId===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}</select>
+    </div>
+    <button class="btn primary" data-go>Add to Wishlist</button>`,
+    root => {
+      root.querySelector('[data-close]').onclick = closeSheet;
+      const u = root.querySelector('#aUrl'); u.oninput = () => st.url = u.value;
+      root.querySelector('#aSet').onchange = e => st.setlistId = e.target.value;
+      root.querySelector('[data-paste]').onclick = async () => {
+        try { st.url = (await navigator.clipboard.readText()).trim(); u.value = st.url; } catch(e) { toast('Long-press the box and tap Paste instead', true); }
+      };
+      bindTagPicker(root, st.tags, () => { st.url = u.value; draw(); });
+      root.querySelector('[data-go]').onclick = () => submitAdd(st, root.querySelector('[data-go]'));
+    });
+  draw();
+}
+
+async function submitAdd(st, btn, extra){
+  const url = (st.url || '').trim();
+  const link = (url.match(/https?:\/\/\S+/) || [''])[0];
+  if (!link) return toast('Paste a song link first', true);
+  btn.disabled = true; btn.textContent = 'Matching song…';
+  try {
+    const j = await api('add', Object.assign({ url: link, tags: st.tags, setlistId: st.setlistId || '', addedBy: settings.name }, extra || {}));
+    if (j.needsConfirm) {
+      btn.disabled = false; btn.textContent = 'Add to Wishlist';
+      return confirmSimilarSheet(st, link, j);
+    }
+    closeSheet();
+    toast((j.duplicate ? 'Already on the list: ' : 'Added: ') + j.title);
+    refresh(true);
+  } catch (e) {
+    toast(e.message, true);
+    btn.disabled = false; btn.textContent = 'Add to Wishlist';
+  }
+}
+
+function confirmSimilarSheet(st, link, j){
+  const first = j.similar[0];
+  openSheet(`
+    <h2>Probably on the list as<br>“${esc(first.title)}”</h2>
+    <div class="card stack" style="gap:6px">
+      <div class="lbl">Already on the list</div>
+      ${j.similar.map(s => `<div><b>${esc(s.title)}</b> <span class="a" style="color:var(--muted)">— ${esc(s.artist)}</span></div>`).join('')}
+      <div class="lbl" style="margin-top:8px">You’re adding</div>
+      <div><b>${esc(j.incoming.title)}</b> <span style="color:var(--muted)">— ${esc(j.incoming.artist)}</span></div>
+    </div>
+    <p class="note">Skip keeps the existing song (your tags are added to it, and if it had no links yet, this link is attached). Add anyway adds it as a separate song.</p>
+    <div class="row">
+      <button class="btn" data-skip>Skip</button>
+      <button class="btn primary" data-force>Add anyway</button>
+    </div>`,
+    root => {
+      root.querySelector('[data-skip]').onclick = e => submitAdd(Object.assign({}, st, { url: link }), e.currentTarget, { skipInto: first.id });
+      root.querySelector('[data-force]').onclick = e => submitAdd(Object.assign({}, st, { url: link }), e.currentTarget, { force: true });
+    });
+}
+
+/* --- Song details --- */
+function detailSheet(s){
+  if (!s) return;
+  const tags = (s.tags || []).slice();
+  const L = s.links || {};
+  const draw = () => openSheet(`
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div class="stack" style="gap:4px"><h2>${esc(s.title)}</h2><div style="color:var(--muted)">${esc(s.artist)}</div></div>
+      <button class="iconbtn ghost" data-close aria-label="Close">${ICON.x}</button>
+    </div>
+    <div class="stack" style="gap:8px">
+      <span class="lbl">Open in</span>
+      <div class="platforms">
+        <a class="pf" href="${esc(L.apple || searchUrl('apple', s))}">Apple Music<small>${L.apple ? '' : 'search'}</small></a>
+        <a class="pf" href="${esc(L.spotify || searchUrl('spotify', s))}">Spotify<small>${L.spotify ? '' : 'search'}</small></a>
+        <a class="pf" href="${esc(L.youtube ? ytMusicUrl(L.youtube) : searchUrl('ytmusic', s))}">YT Music<small>${L.youtube ? '' : 'search'}</small></a>
+      </div>
+      ${L.youtube ? `<a class="btn" href="${esc(L.youtube)}">Open on YouTube</a>` : ''}
+    </div>
+    <div class="stack" style="gap:8px"><span class="lbl">Tags</span>${tagPickerHTML(tags)}</div>
+    ${(s.performed||[]).length ? `<div class="stack" style="gap:6px"><span class="lbl">Performed at</span><div class="chips wrapchips">${s.performed.map(p=>`<span class="tag done">${esc(p)}</span>`).join('')}</div></div>` : ''}
+    <p class="note">${s.addedBy ? 'Added by ' + esc(s.addedBy) : ''}${s.dateAdded ? ' · ' + esc(s.dateAdded) : ''}</p>
+    <div class="row">
+      <button class="btn" data-addset>Add to setlist</button>
+      <button class="btn primary" data-save>Save tags</button>
+    </div>`,
+    root => {
+      root.querySelector('[data-close]').onclick = closeSheet;
+      root.querySelectorAll('a.pf, a.btn').forEach(a => a.style.textDecoration = 'none');
+      bindTagPicker(root, tags, draw);
+      root.querySelector('[data-save]').onclick = async e => {
+        const b = e.currentTarget; b.disabled = true; b.textContent = 'Saving…';
+        try { await api('setTags', { id: s.id, tags }); s.tags = tags.slice(); closeSheet(); toast('Tags saved'); refresh(true); }
+        catch (err) { toast(err.message, true); b.disabled = false; b.textContent = 'Save tags'; }
+      };
+      root.querySelector('[data-addset]').onclick = () => {
+        if (!data.setlists.length) { closeSheet(); view.tab = 'setlists'; render(); return toast('Make a setlist first'); }
+        openSheet(`<h2>Add to which setlist?</h2>${data.setlists.slice().reverse().map(x => `<button class="listsel" data-sl="${esc(x.id)}"><div><div class="n">${esc(x.name)}</div><div class="d">${esc([x.date, x.venue].filter(Boolean).join(' · '))}</div></div>${x.songIds.includes(s.id) ? '<span class="tag done">Already in</span>' : ''}</button>`).join('')}`,
+          r2 => r2.querySelectorAll('[data-sl]').forEach(b => b.onclick = async () => {
+            const sl = data.setlists.find(x => x.id === b.dataset.sl);
+            if (sl.songIds.includes(s.id)) return toast('Already in that setlist');
+            await saveSetlist(sl, { songIds: sl.songIds.concat([s.id]) }, 'Added to ' + sl.name);
+            closeSheet();
+          }));
+      };
+    });
+  draw();
+}
+
+/* --- Settings --- */
+function settingsSheet(){
+  let pf = settings.platform;
+  const draw = () => openSheet(`
+    <div class="row" style="justify-content:space-between"><h2>Settings</h2><button class="iconbtn ghost" data-close aria-label="Close">${ICON.x}</button></div>
+    <div class="stack" style="gap:8px"><label class="lbl" for="eName">Your name</label><input class="field" id="eName" value="${esc(settings.name)}"></div>
+    <div class="stack" style="gap:8px"><span class="lbl">Open songs in</span>
+      <div class="platforms">${Object.keys(PLATFORMS).map(k => `<button class="pf ${pf===k?'on':''}" data-pf="${k}">${PLATFORMS[k].label}</button>`).join('')}</div></div>
+    <button class="btn primary" data-save>Save</button>
+    <a class="btn" href="guide.html" style="text-decoration:none">Setup guide & share button</a>
+    <button class="btn danger" data-reset>Change passcode / sign out</button>`,
+    root => {
+      root.querySelector('[data-close]').onclick = closeSheet;
+      root.querySelectorAll('[data-pf]').forEach(b => b.onclick = () => { settings.name = root.querySelector('#eName').value.trim() || settings.name; pf = b.dataset.pf; draw(); });
+      root.querySelector('[data-save]').onclick = () => {
+        settings.name = root.querySelector('#eName').value.trim() || settings.name; settings.platform = pf;
+        save('settings', settings); closeSheet(); render(); toast('Saved');
+      };
+      root.querySelector('[data-reset]').onclick = () => { settings.passcode = ''; save('settings', settings); closeSheet(); render(); };
+    });
+  draw();
+}
+
+/* --- Setlist actions --- */
+async function saveSetlist(sl, changes, okMsg){
+  const before = JSON.parse(JSON.stringify(sl));
+  Object.assign(sl, changes); render();                 // optimistic
+  try {
+    const j = await api('saveSetlist', Object.assign({ id: sl.id }, changes));
+    Object.assign(sl, j.setlist);
+    if (okMsg) toast(okMsg);
+    refresh(true);
+  } catch (e) {
+    Object.assign(sl, before); render(); toast(e.message, true);
+  }
+}
+function moveInSetlist(i, d){
+  const sl = currentSetlist(), ids = sl.songIds.slice(), j = i + d;
+  if (j < 0 || j >= ids.length) return;
+  [ids[i], ids[j]] = [ids[j], ids[i]];
+  saveSetlist(sl, { songIds: ids });
+}
+function removeFromSetlist(i){
+  const sl = currentSetlist(), ids = sl.songIds.slice();
+  const s = songById(ids[i]);
+  ids.splice(i, 1);
+  saveSetlist(sl, { songIds: ids }, 'Removed ' + (s ? s.title : 'song'));
+}
+function setPerformed(on){
+  const sl = currentSetlist();
+  saveSetlist(sl, { performed: on }, on ? 'Marked as performed' : 'Undone');
+}
+async function deleteSetlist(){
+  const sl = currentSetlist();
+  if (!confirm('Delete “' + sl.name + '”?' + (sl.performed ? ' The show is also removed from these songs’ Performed at column.' : ''))) return;
+  try {
+    await api('deleteSetlist', { id: sl.id });
+    data.setlists = data.setlists.filter(x => x.id !== sl.id);
+    view.setlistId = null; save('setlistId', null); render(); toast('Setlist deleted'); refresh(true);
+  } catch (e) { toast(e.message, true); }
+}
+function setlistFormSheet(sl){
+  openSheet(`
+    <div class="row" style="justify-content:space-between"><h2>${sl ? 'Edit setlist' : 'New setlist'}</h2><button class="iconbtn ghost" data-close aria-label="Close">${ICON.x}</button></div>
+    <div class="stack" style="gap:8px"><label class="lbl" for="fName">Show / rehearsal name</label><input class="field" id="fName" value="${esc(sl ? sl.name : '')}" placeholder="e.g. Livehouse night"></div>
+    <div class="stack" style="gap:8px"><label class="lbl" for="fDate">Date (optional)</label><input class="field" id="fDate" type="date" value="${esc(sl ? sl.date : '')}"></div>
+    <div class="stack" style="gap:8px"><label class="lbl" for="fVenue">Venue (optional)</label><input class="field" id="fVenue" value="${esc(sl ? sl.venue : '')}"></div>
+    <button class="btn primary" data-save>${sl ? 'Save' : 'Create setlist'}</button>`,
+    root => {
+      root.querySelector('[data-close]').onclick = closeSheet;
+      root.querySelector('[data-save]').onclick = async e => {
+        const name = root.querySelector('#fName').value.trim();
+        if (!name) return toast('Give it a name', true);
+        const fields = { name, date: root.querySelector('#fDate').value, venue: root.querySelector('#fVenue').value.trim() };
+        const b = e.currentTarget; b.disabled = true;
+        if (sl) { closeSheet(); return saveSetlist(sl, fields, 'Saved'); }
+        try {
+          const j = await api('saveSetlist', Object.assign(fields, { songIds: [] }));
+          data.setlists.push(j.setlist); view.setlistId = j.setlist.id; save('setlistId', view.setlistId);
+          view.tab = 'setlists'; closeSheet(); render(); toast('Setlist created'); refresh(true);
+        } catch (err) { toast(err.message, true); b.disabled = false; }
+      };
+    });
+}
+function pickSetlistSheet(){
+  openSheet(`<div class="row" style="justify-content:space-between"><h2>Setlists</h2><button class="iconbtn ghost" data-close aria-label="Close">${ICON.x}</button></div>
+    ${data.setlists.slice().reverse().map(x => `<button class="listsel" data-sl="${esc(x.id)}"><div><div class="n">${esc(x.name)}</div><div class="d">${esc([x.date, x.venue, x.songIds.length + ' songs'].filter(Boolean).join(' · '))}</div></div>${x.performed ? '<span class="tag done">Performed ✓</span>' : ''}</button>`).join('')}
+    <button class="btn dashed" data-new>${ICON.plus} New setlist</button>`,
+    root => {
+      root.querySelector('[data-close]').onclick = closeSheet;
+      root.querySelectorAll('[data-sl]').forEach(b => b.onclick = () => { view.setlistId = b.dataset.sl; save('setlistId', view.setlistId); closeSheet(); render(); });
+      root.querySelector('[data-new]').onclick = () => setlistFormSheet(null);
+    });
+}
+function pickSongsSheet(){
+  const sl = currentSetlist();
+  const chosen = sl.songIds.slice();
+  let q = '';
+  const draw = () => {
+    const list = data.songs.filter(s => !q || norm(s.title).includes(norm(q)) || norm(s.artist).includes(norm(q))).slice().reverse();
+    openSheet(`
+      <div class="row" style="justify-content:space-between"><h2>Add to ${esc(sl.name)}</h2><button class="iconbtn ghost" data-close aria-label="Close">${ICON.x}</button></div>
+      <label class="search" style="margin:0">${ICON.search}<input id="pq" placeholder="Search the Wishlist" value="${esc(q)}" aria-label="Search the Wishlist"></label>
+      <div>${list.map(s => `<button class="pick ${chosen.includes(s.id)?'on':''}" data-pick="${esc(s.id)}"><span class="chk">${chosen.includes(s.id)?'✓':''}</span><span style="flex:1;min-width:0"><span class="t" style="display:block;font-weight:600">${esc(s.title)}</span><span style="color:var(--muted);font-size:13px">${esc(s.artist)}</span></span></button>`).join('') || '<div class="empty">No songs match.</div>'}</div>
+      <button class="btn primary" data-done style="position:sticky;bottom:0">Done</button>`,
+      root => {
+        root.querySelector('[data-close]').onclick = closeSheet;
+        const pq = root.querySelector('#pq');
+        pq.oninput = () => { q = pq.value; const pos = pq.selectionStart; draw(); const p2 = $('#pq'); p2.focus(); p2.setSelectionRange(pos, pos); };
+        root.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => {
+          const id = b.dataset.pick, i = chosen.indexOf(id);
+          if (i >= 0) chosen.splice(i, 1); else chosen.push(id);
+          const sc = $('#sheet').scrollTop; draw(); $('#sheet').scrollTop = sc;
+        });
+        root.querySelector('[data-done]').onclick = () => { closeSheet(); saveSetlist(sl, { songIds: chosen }, 'Setlist updated'); };
+      });
+  };
+  draw();
+}
+
+/* ===== Links shared in from the iPhone Shortcut: ?add=<song link> ===== */
+function handleIncomingLink(){
+  const p = new URLSearchParams(location.search);
+  const link = p.get('add');
+  if (!link || !data) return;
+  history.replaceState(null, '', location.pathname);
+  view.tab = 'wishlist'; render();
+  addSheet(link);
+}
+
+/* ===== Start ===== */
+render();
+if (isReady()) {
+  if (data) handleIncomingLink();
+  refresh(true).then(handleIncomingLink);
+}
+</script>
+</body>
+</html>

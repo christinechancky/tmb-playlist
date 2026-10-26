@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Band List setup</title>
+<link rel="icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#17161A;--card:#201F25;--edge:#2E2B35;--text:#F2EFEA;--muted:#A9A4B0;--accent:#F2A65A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.55}
+main{max-width:640px;margin:0 auto;padding:40px 16px 64px}
+h1{font-family:'Space Grotesk',sans-serif;font-size:32px;margin:0 0 6px;letter-spacing:-.5px}
+h2{font-family:'Space Grotesk',sans-serif;font-size:21px;margin:36px 0 10px}
+p.lead{color:var(--muted);margin:0 0 8px}
+ol{padding-left:22px;margin:8px 0}
+li{margin:8px 0}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:14px 16px;margin:12px 0}
+.card b{color:var(--accent)}
+code{background:#2A2830;border-radius:6px;padding:2px 6px;font-size:14px;word-break:break-all}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 18px;border-radius:12px;background:var(--accent);color:#17161A;font-weight:600;text-decoration:none;margin:6px 0}
+.muted{color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Band List setup</h1>
+  <p class="lead">Takes about 5 minutes, once. Ask in the group chat for the band passcode.</p>
+
+  <h2>1. Add the app to your home screen</h2>
+  <ol>
+    <li>Open this link in <b>Safari</b>: <br><a class="btn" href="./">Open Band List</a></li>
+    <li>Tap the <b>Share</b> button, then <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+    <li>Open <b>Band List</b> from your home screen. Enter your name, the band passcode, and where you listen (Apple Music, Spotify or YouTube Music).</li>
+  </ol>
+
+  <h2>2. Make the “Add to Band List” share button</h2>
+  <p class="muted">This lets you share a song straight from Apple Music, Spotify or YouTube.</p>
+  <ol>
+    <li>Open the <b>Shortcuts</b> app and tap <b>+</b> to make a new shortcut. Name it <b>Add to Band List</b>.</li>
+    <li>Tap the <b>ⓘ</b> (info) button at the bottom and turn on <b>Show in Share Sheet</b>. Tap Done.</li>
+    <li>At the top it now says <i>“Receive <u>Images and 18 more</u> from Share Sheet”</i>. Tap that blue text, tap <b>Clear</b>, then tick only <b>URLs</b> and <b>Text</b>.</li>
+    <li>Tap where it says <i>“If there’s no input: <u>Continue</u>”</i> and change it to <b>Get Clipboard</b>.</li>
+    <li>Search for the action <b>URL Encode</b> and add it. It should say <i>“URL Encode <u>Shortcut Input</u>”</i>.</li>
+    <li>Search for the action <b>Open URLs</b> and add it. Tap its blue <u>URL</u> field and type:
+      <div class="card"><code>https://christinechancky.github.io/tmb-playlist/?add=</code></div>
+      then, straight after the <code>=</code>, tap <b>URL Encoded Text</b> from the suggestions bar above the keyboard.</li>
+    <li>Tap <b>Done</b>.</li>
+  </ol>
+
+  <h2>3. Use it</h2>
+  <ol>
+    <li>In Apple Music, Spotify or YouTube, tap <b>Share</b> on a song.</li>
+    <li>Scroll the row of apps or actions and pick <b>Add to Band List</b>. (First time: tap <b>Edit Actions</b> and add it to Favourites so it stays near the top.)</li>
+    <li>The Add song screen opens with the link filled in. Pick tags, tap <b>Add to Wishlist</b>.</li>
+  </ol>
+  <div class="card">
+    <b>The first time</b> the shortcut opens the app, it opens in Safari, which counts as a separate browser from your home-screen icon. Enter your name and passcode once more there; after that it’s remembered.
+  </div>
+
+  <h2>Good to know</h2>
+  <ul>
+    <li><b>“Probably on the list as …”</b> means a song with the same name is already there. <b>Skip</b> keeps the existing one; <b>Add anyway</b> adds yours as a separate version.</li>
+    <li><b>YouTube only</b> songs (covers etc.) open on YouTube for everyone, no account needed.</li>
+    <li><b>no link yet</b> songs were typed into the sheet by hand. Tapping play searches your music app instead.</li>
+    <li>Everything you add lands in the band’s Google Sheet.</li>
+  </ul>
+</main>
+</body>
+</html>
