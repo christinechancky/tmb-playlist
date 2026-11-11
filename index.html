@@ -450,8 +450,7 @@ async function submitAdd(st, btn, extra){
   if (!link) return toast('Paste a song link first', true);
   btn.disabled = true; btn.textContent = 'Matching song…';
   try {
-    if (st.songlink === undefined) st.songlink = await songLinkFromPhone(link);
-    const j = await api('add', Object.assign({ url: link, tags: st.tags, setlistId: st.setlistId || '', addedBy: settings.name, songlink: st.songlink || '' }, extra || {}));
+    const j = await api('add', Object.assign({ url: link, tags: st.tags, setlistId: st.setlistId || '', addedBy: settings.name }, extra || {}));
     if (j.needsConfirm) {
       btn.disabled = false; btn.textContent = 'Add to Wishlist';
       return j.options ? questionSheet(j) : confirmSimilarSheet(st, link, j);

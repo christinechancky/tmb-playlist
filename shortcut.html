@@ -47,10 +47,7 @@ td:first-child{color:var(--muted);width:34%}
 <h2>Find the song</h2>
 <div class="step"><span class="n">4</span>Add <span class="act">Get URLs from Input</span>, input: <span class="v">Shortcut Input</span>.</div>
 <div class="step"><span class="n">5</span>Add <span class="act">Get Item from List</span>: <b>First Item</b> from <span class="v">URLs</span>.<br>Then <span class="act">Set Variable</span>: <b>Link</b> (input: <span class="v">Item from List</span>).</div>
-<div class="step"><span class="n">6</span>Add <span class="act">URL Encode</span>, input: <span class="v">Link</span>.</div>
-<div class="step"><span class="n">7</span>Add <span class="act">Get Contents of URL</span>. Tap the URL field, paste this, then add <span class="v">URL Encoded Text</span> straight after the <code>=</code>:
-  <div class="copy"><code id="u1">https://api.song.link/v1-alpha.1/links?userCountry=HK&amp;url=</code><button data-c="u1">Copy</button></div>
-  Then <span class="act">Set Variable</span>: <b>SongInfo</b> (input: <span class="v">Contents of URL</span>).</div>
+
 
 <h2>Pick tags</h2>
 <div class="step"><span class="n">8</span>Add <span class="act">Get Contents of URL</span>. Paste this, then add <span class="v">Passcode</span> straight after the <code>=</code>:
@@ -64,14 +61,13 @@ td:first-child{color:var(--muted);width:34%}
 <h2>Send to the band sheet</h2>
 <div class="step"><span class="n">12</span>Add <span class="act">Get Contents of URL</span>. Paste this as the URL:
   <div class="copy"><code id="u3">https://script.google.com/macros/s/AKfycbzswaVsXYB0DPty0aZCgYmRWARO2pVadsKLBwYTOOw3G24aXReZmbozZ3hg-pYoyDS4/exec</code><button data-c="u3">Copy</button></div>
-  Tap ⌄: Method <b>POST</b>, Request Body <b>JSON</b>. Add 7 fields (each <b>Text</b>):
+  Tap ⌄: Method <b>POST</b>, Request Body <b>JSON</b>. Add 6 fields (each <b>Text</b>):
   <table>
     <tr><td>action</td><td><code>add</code></td></tr>
     <tr><td>key</td><td><span class="v">Passcode</span></td></tr>
     <tr><td>addedBy</td><td><span class="v">Name</span></td></tr>
     <tr><td>url</td><td><span class="v">Link</span></td></tr>
     <tr><td>tags</td><td><span class="v">Combined Text</span></td></tr>
-    <tr><td>songlink</td><td><span class="v">SongInfo</span></td></tr>
     <tr><td>newTag</td><td><span class="v">newtag</span></td></tr>
   </table>
   Then <span class="act">Set Variable</span>: <b>Result</b> (input: <span class="v">Contents of URL</span>).</div>
@@ -99,7 +95,7 @@ td:first-child{color:var(--muted);width:34%}
 <div class="step"><span class="n">20</span><span class="act">Show Notification</span>: <span class="v">Dictionary Value</span>. Tap <b>Done</b>.</div>
 
 <h2>Test it</h2>
-<p>In Apple Music, tap <b>Share</b> on a song → <b>Add to Band List</b>. Pick tags → Done. A notification should say <b>Added: …</b>. The first time, iOS asks to allow connections to song.link and script.google.com: tap <b>Always Allow</b>.</p>
+<p>In Apple Music, tap <b>Share</b> on a song → <b>Add to Band List</b>. Pick tags → Done. A notification should say <b>Added: …</b>. The first time, iOS asks to allow connections to script.google.com: tap <b>Always Allow</b>.</p>
 
 <h2>Share it with the band</h2>
 <p>Long-press the shortcut → <b>Share</b> → <b>Copy iCloud Link</b>. Your passcode and name are inside, so each bandmate must change steps 2 and 3 to their own name after adding it. <span class="muted">(Or, in the shortcut’s settings, use “Import Questions” for those two Text actions, so iOS asks them when they add it.)</span></p>
