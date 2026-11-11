@@ -450,7 +450,8 @@ async function submitAdd(st, btn, extra){
   if (!link) return toast('Paste a song link first', true);
   btn.disabled = true; btn.textContent = 'Matching song…';
   try {
-    const j = await api('add', Object.assign({ url: link, tags: st.tags, setlistId: st.setlistId || '', addedBy: settings.name }, extra || {}));
+    if (st.songlink === undefined) st.songlink = await songLinkFromPhone(link);
+    const j = await api('add', Object.assign({ url: link, tags: st.tags, setlistId: st.setlistId || '', addedBy: settings.name, songlink: st.songlink || '' }, extra || {}));
     if (j.needsConfirm) {
       btn.disabled = false; btn.textContent = 'Add to Wishlist';
       return confirmSimilarSheet(st, link, j);
@@ -462,6 +463,23 @@ async function submitAdd(st, btn, extra){
     toast(e.message, true);
     btn.disabled = false; btn.textContent = 'Add to Wishlist';
   }
+}
+
+// Look the song up on song.link from this phone (Google's shared servers often get turned away).
+// If it fails, the sheet script tries itself and falls back to Apple / YouTube.
+async function songLinkFromPhone(link){
+  try {
+    const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 8000);
+    const r = await fetch('https://api.song.link/v1-alpha.1/links?userCountry=HK&url=' + encodeURIComponent(link), { signal: ctrl.signal });
+    clearTimeout(t);
+    if (!r.ok) return '';
+    const d = await r.json();
+    if (!d || !d.linksByPlatform) return '';
+    const keep = ['appleMusic', 'spotify', 'youtube', 'youtubeMusic'], L = {}, E = {};
+    keep.forEach(k => { const x = d.linksByPlatform[k]; if (x) { L[k] = { url: x.url, entityUniqueId: x.entityUniqueId }; const e = d.entitiesByUniqueId[x.entityUniqueId]; if (e) E[x.entityUniqueId] = { title: e.title, artistName: e.artistName }; } });
+    const main = d.entitiesByUniqueId[d.entityUniqueId]; if (main) E[d.entityUniqueId] = { title: main.title, artistName: main.artistName };
+    return JSON.stringify({ entityUniqueId: d.entityUniqueId, linksByPlatform: L, entitiesByUniqueId: E });
+  } catch (e) { return ''; }
 }
 
 function confirmSimilarSheet(st, link, j){
