@@ -1,4 +1,4 @@
-# tomorrowmight.bop
+# tm.bucketlist
 
 A small phone web app for our band's song Wishlist and setlists. Songs live in our Google Sheet; this app talks to a Google Apps Script attached to that sheet.
 

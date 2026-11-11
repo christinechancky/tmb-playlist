@@ -1,6 +1,6 @@
 {
-  "name": "tomorrowmight.bop",
-  "short_name": "tm.bop",
+  "name": "tm.bucketlist",
+  "short_name": "tm.bucketlist",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#17161A",
