@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build the share button</title>
+<link rel="icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#17161A;--card:#201F25;--edge:#2E2B35;--text:#F2EFEA;--muted:#A9A4B0;--accent:#F2A65A;--chip:#2A2830}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.55}
+main{max-width:640px;margin:0 auto;padding:36px 16px 80px}
+h1{font-family:'Space Grotesk',sans-serif;font-size:30px;margin:0 0 6px;letter-spacing:-.5px}
+h2{font-family:'Space Grotesk',sans-serif;font-size:19px;margin:34px 0 8px;color:var(--accent)}
+p{margin:8px 0}
+.muted{color:var(--muted);font-size:14px}
+.step{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:12px 14px;margin:10px 0}
+.step .n{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#17161A;font-weight:700;font-size:13px;align-items:center;justify-content:center;margin-right:8px}
+.act{font-weight:700}
+.v{display:inline-block;background:#2b4a7a;color:#cfe0ff;border-radius:6px;padding:0 6px;font-size:14px;font-weight:600}
+code{background:var(--chip);border-radius:6px;padding:2px 6px;font-size:14px;word-break:break-all}
+.copy{display:flex;gap:8px;align-items:stretch;margin:8px 0}
+.copy code{flex:1;display:block;padding:10px;font-size:13px}
+.copy button{flex:none;min-width:72px;border-radius:10px;border:0;background:var(--accent);color:#17161A;font:600 14px Inter,sans-serif}
+table{border-collapse:collapse;width:100%;margin:6px 0;font-size:14px}
+td{border-top:1px solid var(--edge);padding:7px 6px;vertical-align:top}
+td:first-child{color:var(--muted);width:34%}
+.ind{margin-left:16px;border-left:3px solid var(--edge);padding-left:12px}
+</style>
+</head>
+<body>
+<main>
+<h1>Build the share button</h1>
+<p class="muted">Adds a song straight from Apple Music, Spotify or YouTube, without opening Safari. You build it once (about 15 minutes), then share it to the band with an iCloud link.</p>
+<p class="muted"><span class="v">Blue</span> = a variable: tap the field, then pick it from the grey bar above the keyboard (or <b>Select Variable</b>).</p>
+
+<h2>Start</h2>
+<div class="step"><span class="n">0</span>Open <b>Shortcuts</b>. Delete the old “Add to Band List” (long-press → Delete). Tap <b>+</b>, name the new one <b>Add to Band List</b>.</div>
+<div class="step"><span class="n">1</span>Add <span class="act">Receive … from Share Sheet</span> (search “Share Sheet”). Tap its blue input type, <b>Clear</b>, tick only <b>URLs</b> and <b>Text</b>. Set “If there’s no input” to <b>Get Clipboard</b>.</div>
+
+<h2>Your details</h2>
+<div class="step"><span class="n">2</span>Add <span class="act">Text</span>: type the band passcode.<br>Then <span class="act">Set Variable</span>: name it <b>Passcode</b> (input: <span class="v">Text</span>).</div>
+<div class="step"><span class="n">3</span>Add <span class="act">Text</span>: type your name.<br>Then <span class="act">Set Variable</span>: name it <b>Name</b> (input: <span class="v">Text</span>).</div>
+
+<h2>Find the song</h2>
+<div class="step"><span class="n">4</span>Add <span class="act">Get URLs from Input</span>, input: <span class="v">Shortcut Input</span>.</div>
+<div class="step"><span class="n">5</span>Add <span class="act">Get Item from List</span>: <b>First Item</b> from <span class="v">URLs</span>.<br>Then <span class="act">Set Variable</span>: <b>Link</b> (input: <span class="v">Item from List</span>).</div>
+<div class="step"><span class="n">6</span>Add <span class="act">URL Encode</span>, input: <span class="v">Link</span>.</div>
+<div class="step"><span class="n">7</span>Add <span class="act">Get Contents of URL</span>. Tap the URL field, paste this, then add <span class="v">URL Encoded Text</span> straight after the <code>=</code>:
+  <div class="copy"><code id="u1">https://api.song.link/v1-alpha.1/links?userCountry=HK&amp;url=</code><button data-c="u1">Copy</button></div>
+  Then <span class="act">Set Variable</span>: <b>SongInfo</b> (input: <span class="v">Contents of URL</span>).</div>
+
+<h2>Pick tags</h2>
+<div class="step"><span class="n">8</span>Add <span class="act">Get Contents of URL</span>. Paste this, then add <span class="v">Passcode</span> straight after the <code>=</code>:
+  <div class="copy"><code id="u2">https://script.google.com/macros/s/AKfycbzswaVsXYB0DPty0aZCgYmRWARO2pVadsKLBwYTOOw3G24aXReZmbozZ3hg-pYoyDS4/exec?action=options&amp;key=</code><button data-c="u2">Copy</button></div></div>
+<div class="step"><span class="n">9</span>Add <span class="act">Get Dictionary Value</span>: Get <b>Value</b> for <code>shortcutTags</code> in <span class="v">Contents of URL</span>.</div>
+<div class="step"><span class="n">10</span>Add <span class="act">Choose from List</span>, input <span class="v">Dictionary Value</span>. Tap the ⌄ arrow: Prompt <b>Tags</b>, turn on <b>Select Multiple</b>.</div>
+<div class="step"><span class="n">11</span>Add <span class="act">Combine Text</span>: <span class="v">Chosen Item</span> with <b>New Lines</b>.</div>
+
+<h2>Send to the band sheet</h2>
+<div class="step"><span class="n">12</span>Add <span class="act">Get Contents of URL</span>. Paste this as the URL:
+  <div class="copy"><code id="u3">https://script.google.com/macros/s/AKfycbzswaVsXYB0DPty0aZCgYmRWARO2pVadsKLBwYTOOw3G24aXReZmbozZ3hg-pYoyDS4/exec</code><button data-c="u3">Copy</button></div>
+  Tap ⌄: Method <b>POST</b>, Request Body <b>JSON</b>. Add 6 fields (each <b>Text</b>):
+  <table>
+    <tr><td>action</td><td><code>add</code></td></tr>
+    <tr><td>key</td><td><span class="v">Passcode</span></td></tr>
+    <tr><td>addedBy</td><td><span class="v">Name</span></td></tr>
+    <tr><td>url</td><td><span class="v">Link</span></td></tr>
+    <tr><td>tags</td><td><span class="v">Combined Text</span></td></tr>
+    <tr><td>songlink</td><td><span class="v">SongInfo</span></td></tr>
+  </table>
+  Then <span class="act">Set Variable</span>: <b>Result</b> (input: <span class="v">Contents of URL</span>).</div>
+
+<h2>“Probably on the list as …”</h2>
+<div class="step"><span class="n">13</span>Add <span class="act">Get Dictionary Value</span>: <code>status</code> in <span class="v">Result</span>.</div>
+<div class="step"><span class="n">14</span>Add <span class="act">If</span>: <span class="v">Dictionary Value</span> <b>is</b> <code>confirm</code>. Put steps 15–18 <b>inside</b> the If (above “Otherwise”).</div>
+<div class="ind">
+<div class="step"><span class="n">15</span><span class="act">Get Dictionary Value</span>: <code>pendingId</code> in <span class="v">Result</span>. Then <span class="act">Set Variable</span>: <b>Pending</b>.</div>
+<div class="step"><span class="n">16</span><span class="act">Get Dictionary Value</span>: <code>message</code> in <span class="v">Result</span>.</div>
+<div class="step"><span class="n">17</span><span class="act">Choose from Menu</span>, prompt: <span class="v">Dictionary Value</span>. Rename the two options to <b>Skip</b> and <b>Add anyway</b>.<br>
+  Under <b>Skip</b>: add <span class="act">Text</span> <code>skip</code>. Under <b>Add anyway</b>: add <span class="act">Text</span> <code>add</code>.</div>
+<div class="step"><span class="n">18</span>After “End Menu”: <span class="act">Get Contents of URL</span>, same URL as step 12, <b>POST</b>, <b>JSON</b>, 4 Text fields:
+  <table>
+    <tr><td>action</td><td><code>confirm</code></td></tr>
+    <tr><td>key</td><td><span class="v">Passcode</span></td></tr>
+    <tr><td>pending</td><td><span class="v">Pending</span></td></tr>
+    <tr><td>choice</td><td><span class="v">Menu Result</span></td></tr>
+  </table>
+  Then <span class="act">Set Variable</span>: <b>Result</b> (input: <span class="v">Contents of URL</span>).</div>
+</div>
+
+<h2>Done message</h2>
+<div class="step"><span class="n">19</span>After “End If”: <span class="act">Get Dictionary Value</span>: <code>message</code> in <span class="v">Result</span>.</div>
+<div class="step"><span class="n">20</span><span class="act">Show Notification</span>: <span class="v">Dictionary Value</span>. Tap <b>Done</b>.</div>
+
+<h2>Test it</h2>
+<p>In Apple Music, tap <b>Share</b> on a song → <b>Add to Band List</b>. Pick tags → Done. A notification should say <b>Added: …</b>. The first time, iOS asks to allow connections to song.link and script.google.com: tap <b>Always Allow</b>.</p>
+
+<h2>Share it with the band</h2>
+<p>Long-press the shortcut → <b>Share</b> → <b>Copy iCloud Link</b>. Your passcode and name are inside, so each bandmate must change steps 2 and 3 to their own name after adding it. <span class="muted">(Or, in the shortcut’s settings, use “Import Questions” for those two Text actions, so iOS asks them when they add it.)</span></p>
+</main>
+<script>
+document.querySelectorAll('[data-c]').forEach(b => b.onclick = async () => {
+  const t = document.getElementById(b.dataset.c).textContent;
+  try { await navigator.clipboard.writeText(t); b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy', 1500); }
+  catch (e) { b.textContent = 'Hold text'; }
+});
+</script>
+</body>
+</html>
