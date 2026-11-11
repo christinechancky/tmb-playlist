@@ -185,13 +185,46 @@ function openTarget(s, platform){
   if (platform === 'apple' && L.apple) return { url: L.apple, how: 'Apple Music' };
   if (platform === 'spotify' && L.spotify) return { url: L.spotify, how: 'Spotify' };
   if (platform === 'ytmusic' && L.youtube) return { url: ytMusicUrl(L.youtube), how: 'YouTube Music' };
-  if (L.youtube) return { url: L.youtube, how: 'YouTube' };            // YouTube-only covers: works without an account
-  return { url: searchUrl(platform, s), how: 'search', search: true }; // hand-typed songs with no links yet
+  if (L.youtube && !L.apple && !L.spotify) return { url: L.youtube, how: 'YouTube' }; // YouTube-only covers
+  return { url: searchUrl(platform, s), how: 'search', search: true, platform: platform }; // no link on your platform yet
 }
-function openSong(s){
+async function openSong(s){
   const t = openTarget(s);
-  if (t.search) toast('No link yet — searching ' + PLATFORMS[settings.platform || 'apple'].short);
+  if (t.search && t.platform === 'apple') return openAppleSmart(s);
+  if (t.search) toast('No link yet — searching ' + PLATFORMS[t.platform].short);
   window.location.href = t.url;
+}
+
+// Apple Music ignores search words in links, so look the song up first and open the best match directly.
+function itunesSearch(term){
+  return new Promise(resolve => {
+    const cb = 'itcb' + Date.now();
+    const sc = document.createElement('script');
+    const done = v => { clearTimeout(timer); delete window[cb]; sc.remove(); resolve(v); };
+    const timer = setTimeout(() => done([]), 6000);
+    window[cb] = j => done((j && j.results) || []);
+    sc.onerror = () => done([]);
+    sc.src = 'https://itunes.apple.com/search?country=HK&entity=song&limit=20&callback=' + cb + '&term=' + encodeURIComponent(term);
+    document.head.appendChild(sc);
+  });
+}
+function baseTitleJS(t){
+  return norm(String(t||'').replace(/[\(\[（【「『].*?[\)\]）】」』]/g,' ').replace(/\s[-–—|]\s.*$/,' ').replace(/[^\p{L}\p{N}]+/gu,''));
+}
+async function openAppleSmart(s){
+  toast('Finding it on Apple Music…');
+  const want = baseTitleJS(s.title), artist = norm(s.artist).replace(/\s+/g,'');
+  let res = await itunesSearch((s.title + ' ' + (s.artist||'')).trim());
+  if (!res.length) res = await itunesSearch(s.title);
+  const same = res.filter(r => baseTitleJS(r.trackName) === want);
+  const best = same.find(r => artist && (norm(r.artistName).replace(/\s+/g,'').includes(artist) || artist.includes(norm(r.artistName).replace(/\s+/g,''))))
+            || (s.durationMs && same.find(r => Math.abs(r.trackTimeMillis - s.durationMs) <= 2000))
+            || null;
+  if (best) { window.location.href = String(best.trackViewUrl).replace(/[?&]uo=\d+/, ''); return; }
+  // Nothing certain: copy the name so it can be pasted into Apple Music's search.
+  try { await navigator.clipboard.writeText((s.title + ' ' + (s.artist||'')).trim()); } catch(e) {}
+  toast('Not found — song name copied. Paste it into Apple Music search.');
+  setTimeout(() => { window.location.href = 'https://music.apple.com/hk/search'; }, 1200);
 }
 
 /* ===== Rendering ===== */
@@ -554,7 +587,7 @@ function detailSheet(s){
     <div class="stack" style="gap:8px">
       <span class="lbl">Open in</span>
       <div class="platforms">
-        <a class="pf" href="${esc(L.apple || searchUrl('apple', s))}">Apple Music<small>${L.apple ? '' : 'search'}</small></a>
+        ${L.apple ? `<a class="pf" href="${esc(L.apple)}">Apple Music</a>` : `<button class="pf" data-applefind>Apple Music<small>find</small></button>`}
         <a class="pf" href="${esc(L.spotify || searchUrl('spotify', s))}">Spotify<small>${L.spotify ? '' : 'search'}</small></a>
         <a class="pf" href="${esc(L.youtube ? ytMusicUrl(L.youtube) : searchUrl('ytmusic', s))}">YT Music<small>${L.youtube ? '' : 'search'}</small></a>
       </div>
@@ -570,6 +603,7 @@ function detailSheet(s){
     root => {
       root.querySelector('[data-close]').onclick = closeSheet;
       root.querySelectorAll('a.pf, a.btn').forEach(a => a.style.textDecoration = 'none');
+      const af = root.querySelector('[data-applefind]'); if (af) af.onclick = () => openAppleSmart(s);
       bindTagPicker(root, tags, draw);
       root.querySelector('[data-save]').onclick = async e => {
         const b = e.currentTarget; b.disabled = true; b.textContent = 'Saving…';
