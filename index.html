@@ -454,11 +454,9 @@ async function submitAdd(st, btn, extra){
     const j = await api('add', Object.assign({ url: link, tags: st.tags, setlistId: st.setlistId || '', addedBy: settings.name, songlink: st.songlink || '' }, extra || {}));
     if (j.needsConfirm) {
       btn.disabled = false; btn.textContent = 'Add to Wishlist';
-      return confirmSimilarSheet(st, link, j);
+      return j.options ? questionSheet(j) : confirmSimilarSheet(st, link, j);
     }
-    closeSheet();
-    toast((j.duplicate ? 'Already on the list: ' : 'Added: ') + j.title);
-    refresh(true);
+    addDone(j);
   } catch (e) {
     toast(e.message, true);
     btn.disabled = false; btn.textContent = 'Add to Wishlist';
@@ -480,6 +478,47 @@ async function songLinkFromPhone(link){
     const main = d.entitiesByUniqueId[d.entityUniqueId]; if (main) E[d.entityUniqueId] = { title: main.title, artistName: main.artistName };
     return JSON.stringify({ entityUniqueId: d.entityUniqueId, linksByPlatform: L, entitiesByUniqueId: E });
   } catch (e) { return ''; }
+}
+
+function addDone(j){
+  closeSheet();
+  toast(j.message || ((j.duplicate ? 'Already on the list: ' : 'Added: ') + j.title));
+  refresh(true);
+}
+
+// One question from the sheet script ("Probably on the list as…" and/or "which artist?"), answered with one tap.
+function questionSheet(j){
+  let q = '';
+  const draw = () => {
+    const opts = j.options.filter(o => !q || norm(o).includes(norm(q)));
+    openSheet(`
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <h2>${esc(j.message)}</h2>
+        <button class="iconbtn ghost" data-close aria-label="Cancel">${ICON.x}</button>
+      </div>
+      <div class="card stack" style="gap:4px">
+        <div class="lbl">You’re adding</div>
+        <div><b>${esc(j.incoming.title)}</b> <span style="color:var(--muted)">— ${esc(j.incoming.artist)}</span></div>
+        ${(j.similar||[]).length ? `<div class="lbl" style="margin-top:8px">Already on the list</div>${j.similar.map(s => `<div><b>${esc(s.title)}</b> <span style="color:var(--muted)">— ${esc(s.artist)}</span></div>`).join('')}` : ''}
+      </div>
+      ${j.options.length > 6 ? `<label class="search" style="margin:0">${ICON.search}<input id="oq" placeholder="Search artists" value="${esc(q)}" aria-label="Search options"></label>` : ''}
+      <div class="stack" style="gap:8px">${opts.map((o, i) => `<button class="btn ${i===0 && !q ? 'primary' : ''}" style="justify-content:flex-start;text-align:left;height:auto;min-height:48px;padding:10px 14px" data-opt="${esc(o)}">${esc(o)}</button>`).join('')}</div>`,
+      root => {
+        root.querySelector('[data-close]').onclick = closeSheet;
+        const oq = root.querySelector('#oq');
+        if (oq) oq.oninput = () => { q = oq.value; const pos = oq.selectionStart; draw(); const o2 = $('#oq'); o2.focus(); o2.setSelectionRange(pos, pos); };
+        root.querySelectorAll('[data-opt]').forEach(b => b.onclick = async () => {
+          root.querySelectorAll('[data-opt]').forEach(x => x.disabled = true);
+          b.textContent = 'Saving…';
+          try {
+            const r = await api('confirm', { pending: j.pendingId, choice: b.dataset.opt });
+            if (r.needsConfirm && r.options) return questionSheet(r);
+            addDone(r);
+          } catch (e) { toast(e.message, true); closeSheet(); }
+        });
+      });
+  };
+  draw();
 }
 
 function confirmSimilarSheet(st, link, j){

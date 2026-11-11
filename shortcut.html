@@ -58,11 +58,13 @@ td:first-child{color:var(--muted);width:34%}
 <div class="step"><span class="n">9</span>Add <span class="act">Get Dictionary Value</span>: Get <b>Value</b> for <code>shortcutTags</code> in <span class="v">Contents of URL</span>.</div>
 <div class="step"><span class="n">10</span>Add <span class="act">Choose from List</span>, input <span class="v">Dictionary Value</span>. Tap the ⌄ arrow: Prompt <b>Tags</b>, turn on <b>Select Multiple</b>.</div>
 <div class="step"><span class="n">11</span>Add <span class="act">Combine Text</span>: <span class="v">Chosen Item</span> with <b>New Lines</b>.</div>
+<div class="step"><span class="n">11b</span>Add <span class="act">If</span>: <span class="v">Combined Text</span> <b>contains</b> <code>New tag</code>. Inside it (above “Otherwise”):<br>
+  <span class="act">Ask for Input</span>, prompt <b>New tag name</b> → then <span class="act">Set Variable</span>: <b>newtag</b> (input: <span class="v">Provided Input</span>).</div>
 
 <h2>Send to the band sheet</h2>
 <div class="step"><span class="n">12</span>Add <span class="act">Get Contents of URL</span>. Paste this as the URL:
   <div class="copy"><code id="u3">https://script.google.com/macros/s/AKfycbzswaVsXYB0DPty0aZCgYmRWARO2pVadsKLBwYTOOw3G24aXReZmbozZ3hg-pYoyDS4/exec</code><button data-c="u3">Copy</button></div>
-  Tap ⌄: Method <b>POST</b>, Request Body <b>JSON</b>. Add 6 fields (each <b>Text</b>):
+  Tap ⌄: Method <b>POST</b>, Request Body <b>JSON</b>. Add 7 fields (each <b>Text</b>):
   <table>
     <tr><td>action</td><td><code>add</code></td></tr>
     <tr><td>key</td><td><span class="v">Passcode</span></td></tr>
@@ -70,23 +72,24 @@ td:first-child{color:var(--muted);width:34%}
     <tr><td>url</td><td><span class="v">Link</span></td></tr>
     <tr><td>tags</td><td><span class="v">Combined Text</span></td></tr>
     <tr><td>songlink</td><td><span class="v">SongInfo</span></td></tr>
+    <tr><td>newTag</td><td><span class="v">newtag</span></td></tr>
   </table>
   Then <span class="act">Set Variable</span>: <b>Result</b> (input: <span class="v">Contents of URL</span>).</div>
 
-<h2>“Probably on the list as …”</h2>
+<h2>Questions (“Probably on the list as …”, which artist)</h2>
 <div class="step"><span class="n">13</span>Add <span class="act">Get Dictionary Value</span>: <code>status</code> in <span class="v">Result</span>.</div>
 <div class="step"><span class="n">14</span>Add <span class="act">If</span>: <span class="v">Dictionary Value</span> <b>is</b> <code>confirm</code>. Put steps 15–18 <b>inside</b> the If (above “Otherwise”).</div>
 <div class="ind">
 <div class="step"><span class="n">15</span><span class="act">Get Dictionary Value</span>: <code>pendingId</code> in <span class="v">Result</span>. Then <span class="act">Set Variable</span>: <b>Pending</b>.</div>
-<div class="step"><span class="n">16</span><span class="act">Get Dictionary Value</span>: <code>message</code> in <span class="v">Result</span>.</div>
-<div class="step"><span class="n">17</span><span class="act">Choose from Menu</span>, prompt: <span class="v">Dictionary Value</span>. Rename the two options to <b>Skip</b> and <b>Add anyway</b>.<br>
-  Under <b>Skip</b>: add <span class="act">Text</span> <code>skip</code>. Under <b>Add anyway</b>: add <span class="act">Text</span> <code>add</code>.</div>
-<div class="step"><span class="n">18</span>After “End Menu”: <span class="act">Get Contents of URL</span>, same URL as step 12, <b>POST</b>, <b>JSON</b>, 4 Text fields:
+<div class="step"><span class="n">16</span><span class="act">Get Dictionary Value</span>: <code>message</code> in <span class="v">Result</span>. Then <span class="act">Set Variable</span>: <b>question</b>.</div>
+<div class="step"><span class="n">17</span><span class="act">Get Dictionary Value</span>: <code>options</code> in <span class="v">Result</span>.<br>
+  Then <span class="act">Choose from List</span>, input <span class="v">Dictionary Value</span>. Tap ⌄: Prompt <span class="v">question</span>. Leave Select Multiple <b>off</b>.</div>
+<div class="step"><span class="n">18</span><span class="act">Get Contents of URL</span>, same URL as step 12, <b>POST</b>, <b>JSON</b>, 4 Text fields:
   <table>
     <tr><td>action</td><td><code>confirm</code></td></tr>
     <tr><td>key</td><td><span class="v">Passcode</span></td></tr>
     <tr><td>pending</td><td><span class="v">Pending</span></td></tr>
-    <tr><td>choice</td><td><span class="v">Menu Result</span></td></tr>
+    <tr><td>choice</td><td><span class="v">Chosen Item</span> (from step 17)</td></tr>
   </table>
   Then <span class="act">Set Variable</span>: <b>Result</b> (input: <span class="v">Contents of URL</span>).</div>
 </div>
