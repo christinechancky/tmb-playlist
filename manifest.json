@@ -1,6 +1,6 @@
 {
-  "name": "Band List",
-  "short_name": "Band List",
+  "name": "tomorrowmight.bop",
+  "short_name": "tomorrowmight.bop",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#17161A",
