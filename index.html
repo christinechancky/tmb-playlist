@@ -633,7 +633,6 @@ function settingsSheet(){
     <div class="stack" style="gap:8px"><span class="lbl">Open songs in</span>
       <div class="platforms">${Object.keys(PLATFORMS).map(k => `<button class="pf ${pf===k?'on':''}" data-pf="${k}">${PLATFORMS[k].label}</button>`).join('')}</div></div>
     <button class="btn primary" data-save>Save</button>
-    <a class="btn" href="shortcut.html" style="text-decoration:none">Build the share button</a>
     <a class="btn" href="guide.html" style="text-decoration:none">Setup guide</a>
     <button class="btn danger" data-reset>Change passcode / sign out</button>`,
     root => {
