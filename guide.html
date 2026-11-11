@@ -36,31 +36,17 @@ code{background:#2A2830;border-radius:6px;padding:2px 6px;font-size:14px;word-br
     <li>Open <b>Band List</b> from your home screen. Enter your name, the band passcode, and where you listen (Apple Music, Spotify or YouTube Music).</li>
   </ol>
 
-  <h2>2. Make the “Add to Band List” share button</h2>
-  <p class="muted">This lets you share a song straight from Apple Music, Spotify or YouTube.</p>
-  <ol>
-    <li>Open the <b>Shortcuts</b> app and tap <b>+</b> to make a new shortcut. Name it <b>Add to Band List</b>.</li>
-    <li>Tap the <b>ⓘ</b> (info) button at the bottom and turn on <b>Show in Share Sheet</b>. Tap Done.</li>
-    <li>At the top it now says <i>“Receive <u>Images and 18 more</u> from Share Sheet”</i>. Tap that blue text, tap <b>Clear</b>, then tick only <b>URLs</b> and <b>Text</b>.</li>
-    <li>Tap where it says <i>“If there’s no input: <u>Continue</u>”</i> and change it to <b>Get Clipboard</b>.</li>
-    <li>Search for the action <b>URL Encode</b> and add it. It should say <i>“URL Encode <u>Shortcut Input</u>”</i>.</li>
-    <li>Search for the action <b>Open URLs</b> and add it. Tap its faint blue <u>URL</u> placeholder and type:
-      <div class="card"><code>https://christinechancky.github.io/tmb-playlist/?add=</code></div>
-      Don’t add a space. In the grey bar just above the keyboard, tap <b>URL Encoded Text</b> — a blue token appears right after the <code>=</code>.
-      <span class="muted">(Can’t see it? Tap <b>Select Variable</b> in that bar, then tap the URL Encode action.)</span>
-      <div class="card">It should now read: <b>Open</b> <code>…/tmb-playlist/?add=</code><b>[URL Encoded Text]</b><br><span class="muted">If you accidentally tap the blue token, a settings panel opens. Just swipe it down; nothing needs changing.</span></div></li>
-    <li>Tap <b>Done</b>.</li>
-  </ol>
+  <h2>2. Get the “Add to Band List” share button</h2>
+  <p>Ask Christine for the <b>iCloud link</b> to the shortcut. Tap it → <b>Add Shortcut</b>, then open it in the Shortcuts app and change the passcode and name (the two <b>Text</b> actions near the top) to the passcode and <b>your</b> name.</p>
+  <p class="muted">Building it yourself instead? Follow <a href="shortcut.html">Build the share button</a>.</p>
 
   <h2>3. Use it</h2>
   <ol>
     <li>In Apple Music, Spotify or YouTube, tap <b>Share</b> on a song.</li>
-    <li>Scroll the row of apps or actions and pick <b>Add to Band List</b>. (First time: tap <b>Edit Actions</b> and add it to Favourites so it stays near the top.)</li>
-    <li>The Add song screen opens with the link filled in. Pick tags, tap <b>Add to Wishlist</b>.</li>
+    <li>Pick <b>Add to Band List</b>. (First time: tap <b>Edit Actions</b> and add it to Favourites so it stays near the top.)</li>
+    <li>Pick tags (or <b>(no tags)</b>) → Done. A notification says <b>Added: …</b>. Safari never opens.</li>
+    <li>The first time, iOS asks to allow connections to song.link and script.google.com: tap <b>Always Allow</b>.</li>
   </ol>
-  <div class="card">
-    <b>The first time</b> the shortcut opens the app, it opens in Safari, which counts as a separate browser from your home-screen icon. Enter your name and passcode once more there; after that it’s remembered.
-  </div>
 
   <h2>Good to know</h2>
   <ul>
