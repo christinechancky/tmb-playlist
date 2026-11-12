@@ -213,7 +213,7 @@ function baseTitleJS(t){
 }
 async function openAppleSmart(s){
   toast('Finding it on Apple Music…');
-  const want = baseTitleJS(s.title), artist = norm(s.artist).replace(/\s+/g,'');
+  const want = baseTitleJS(s.title), artist = norm(String(s.artist||'').split(/\s*(?:&|,|、|\/)\s*/)[0]).replace(/\s+/g,'');
   let res = await itunesSearch((s.title + ' ' + (s.artist||'')).trim());
   if (!res.length) res = await itunesSearch(s.title);
   const same = res.filter(r => baseTitleJS(r.trackName) === want);
